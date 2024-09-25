@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<schema
+  xmlns="http://www.w3.org/2001/XMLSchema"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:fn="http://www.w3.org/2005/xpath-functions"
+  xmlns:dfdl="http://www.ogf.org/dfdl/dfdl-1.0/"
+  xmlns:fakeTDL="urn:com.owlcyberdefense.fakeTDL"
+  targetNamespace="urn:com.owlcyberdefense.fakeTDL">
+
+  <include schemaLocation="/org/apache/daffodil/xsd/DFDLGeneralFormat.dfdl.xsd" />
+
+  <annotation>
+    <appinfo source="http://www.ogf.org/dfdl/">
+
+      <dfdl:defineFormat name="baseFormat">
+        <dfdl:format
+          ref="fakeTDL:GeneralFormat"
+          representation="binary"
+          binaryNumberRep="binary"
+          byteOrder="bigEndian"
+          lengthKind="implicit"
+          lengthUnits="bytes"
+          alignmentUnits="bytes"
+          alignment="1"
+          encoding="ascii"
+          fillByte='X'
+        />
+      </dfdl:defineFormat>
+
+      <dfdl:defineFormat name="msg">
+        <dfdl:format
+          lengthKind="explicit"
+          length="64"
+        />
+      </dfdl:defineFormat>
+    </appinfo>
+  </annotation>
+
+</schema>

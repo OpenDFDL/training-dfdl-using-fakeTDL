@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+TDML is a convenient way to package tests of DFDL schemas and test data
+
+In this test suite, we use the TDML namespace as the default namespace to
+avoid the need to have "tdml:" prefixes on all the TDML elements.
+
+There are a few extra namespace prefix definitions here that aren't used yet,
+but they are commonly needed so we have them here for future convenience.
+-->
+<testSuite
+  xmlns="http://www.ibm.com/xmlns/dfdl/testData"
+  xmlns:tdml="http://www.ibm.com/xmlns/dfdl/testData"
+  xmlns:dfdl="http://www.ogf.org/dfdl/dfdl-1.0/"
+  xmlns:fn="http://www.w3.org/2005/xpath-functions"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  defaultRoundTrip="onePass"
+  defaultValidation="on">
+
+  <!--
+  This parser test case just points at the various test files: the schema (aka model),
+  the input data (aka document), and the expected output (aka infoset).
+
+  Per the defaultRoundTrip 'onePass' above, this test will
+  parse the data, compare with the expected infoset,
+  then unparse the data, and compare with the original data.
+
+  TDML also allows you to create negative tests that expect various kinds of errors.
+  -->
+  <parserTestCase name="test_track_good_01" root="fakeTDL" model="fakeTDL.dfdl.xsd">
+    <document>
+      <documentPart type="file">test_track_good_01.dat</documentPart>
+    </document>
+    <infoset>
+      <dfdlInfoset>
+      <fakeTDL xmlns="">
+        <bytes></bytes>
+      </fakeTDL>
+      </dfdlInfoset>
+    </infoset>
+  </parserTestCase>
+
+</testSuite>

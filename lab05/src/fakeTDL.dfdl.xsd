@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:fn="http://www.w3.org/2005/xpath-functions"
+  xmlns:dfdl="http://www.ogf.org/dfdl/dfdl-1.0/"
+  xmlns:fakeTDL="urn:com.owlcyberdefense.fakeTDL">
+
+  <xs:import namespace="urn:com.owlcyberdefense.fakeTDL" schemaLocation="fakeTDLType.dfdl.xsd"/>
+
+  <xs:annotation>
+    <xs:appinfo source="http://www.ogf.org/dfdl/">
+
+      <dfdl:format  ref="fakeTDL:baseFormat" />
+
+    </xs:appinfo>
+  </xs:annotation>
+  <!--
+   Root aka global element declaration for one fakeTDL message
+
+   Best practice: make global element declarations be one-liners like this.
+   Put the complexity in the complex type definition it uses.
+   -->
+  <xs:element name="fakeTDL" type="fakeTDL:fakeTDLType" dfdl:lengthKind="explicit" dfdl:length="64"/>
+
+  <!--
+  In order to test whole files of messages at once, we add this element.
+  -->
+  <xs:element name="fakeTDLFile">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="fakeTDL" type="fakeTDL:fakeTDLType" dfdl:lengthKind="explicit" dfdl:length="64"
+                 minOccurs="1" maxOccurs="100" dfdl:occursCountKind="implicit">
+          <xs:annotation><xs:appinfo source="http://www.ogf.org/dfdl/">
+            <!--
+            Exercise: First run test_file_bad_01 without this discriminator. Then add the discriminator.
+
+            This discriminator controls the point of uncertainty (PoU) of the variable length array.
+
+            Because the dfdl:occursCountKind is 'implicit', the DFDL parser speculates forward
+            at this PoU because it does not know if there is another occurrence of the array or not.
+
+            This discriminator peeks at the data stream without consuming any data
+            using a regular expression pattern. If
+            it matches, then the discriminator is true. If there is no match, the discriminator is false.
+
+            If false, the PoU is resolved as the speculation failed, and there is no additional fakeTDL
+            element.
+
+            If true, the PoU is resolved as the speculation is correct, and the parse now must succeed
+            to parse another fakeTDL element. This PoU is ended.
+
+            If the parse succeeds, then the parser will face another PoU about the next possible occurrence.
+            (up until the number of occurrences equals maxOccurs)
+
+            If the parse fails, then it is parse error, and as there is no PoU, the error propagates, and
+            in this case the entire parse will fail since there is no enclosing PoU.
+
+            This discriminator means: if there is at least 1 more byte of data, then there must be
+            another whole fakeTDL message.
+            -->
+            <dfdl:discriminator testKind="pattern" testPattern="."/>
+          </xs:appinfo></xs:annotation>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

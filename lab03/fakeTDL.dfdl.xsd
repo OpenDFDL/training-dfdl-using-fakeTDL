@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<schema
+  xmlns="http://www.w3.org/2001/XMLSchema"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:fn="http://www.w3.org/2005/xpath-functions"
+  xmlns:dfdl="http://www.ogf.org/dfdl/dfdl-1.0/"
+  xmlns:fakeTDL="urn:com.owlcyberdefense.fakeTDL"
+  targetNamespace="urn:com.owlcyberdefense.fakeTDL">
+
+  <!--
+  Using DFDLGeneralFormat as a basis
+
+  Including this and using it in our format avoids the need to
+  define values for 20+ properties that we just want typical default
+  values for. Examples are sequenceKind="ordered", ignoreCase="no".
+
+  DFDL requires you to be explicit about exactly what all properties
+  values are. Hence, if we want default values for these 20+ properties
+  we have to specify where we're getting those default values.
+
+  For a look at all the property definitions in DFDLGeneralFormat.dfdl.xsd, go to
+  https://s.apache.org/daffodil-DFDLGeneralFormat.dfdl.xsd and
+  https://s.apache.org/daffodil-DFDLGeneralFormatBase.dfdl.xsd
+  -->
+  <include schemaLocation="/org/apache/daffodil/xsd/DFDLGeneralFormat.dfdl.xsd" />
+
+  <annotation>
+    <appinfo source="http://www.ogf.org/dfdl/">
+
+      <!--
+      This format applies to the whole file.
+      Note that we do NOT prefix the property names with "dfdl:" because this
+      whole structure is a dfdl:format element already.
+
+      The 'ref' property is what starts this off extending the
+      DFDLGeneralFormat imported above.
+      -->
+      <dfdl:format
+        ref="fakeTDL:GeneralFormat"
+        representation="binary"
+        binaryNumberRep="binary"
+        byteOrder="bigEndian"
+        lengthKind="implicit"
+        lengthUnits="bytes"
+        alignmentUnits="bytes"
+        alignment="1"
+        encoding="ascii"
+        fillByte='X'
+      />
+    </appinfo>
+  </annotation>
+
+  <!--
+   Root aka global element declaration for one fakeTDL message
+
+   Best practice: make global element declarations be one-liners like this.
+   Put the complexity in the complex type definition it uses.
+   -->
+  <element name="fakeTDL" type="fakeTDL:fakeTDLType" dfdl:lengthKind="explicit" dfdl:length="64"/>
+
+  <!--
+    This complex type starts the guts of the schema.
+
+    If someone wants to use this schema, but wants to name their element "msg" or other
+    name of their choosing, they can use this type, and ignore the global element declarations.
+    -->
+  <complexType name="fakeTDLType">
+    <choice>
+      <element name="track" type="fakeTDL:trackMessageType" dfdl:initiator="T"/>
+      <!--
+      At some point there will be other message types here.
+      -->
+    </choice>
+  </complexType>
+
+  <complexType name="trackMessageType">
+    <sequence>
+      <!--
+      Observe that this list of fields for the Track message is now
+      just that, a list. All the XSD and DFDL aspects have been moved
+      into the type definitions.
+      -->
+      <element name="source" type="fakeTDL:unitNumber"/>
+      <element name="sendTime" type="fakeTDL:timeOfDay"/>
+      <element name="mustAck" type="fakeTDL:mustAck"/>
+      <element name="messageID" type="fakeTDL:messageID"/>
+      <!--
+      A useful convention is to put the units of measure in the name
+      of the type. These lat/lon are measured in degrees, so that's a
+      suffix on the name.
+      -->
+      <element name="sourceLat" type="fakeTDL:latitude_degrees"/>
+      <element name="sourceLon" type="fakeTDL:longitude_degrees"/>
+      <element name="sourceElev" type="fakeTDL:elevation_25FeetMSL"/>
+      <!--
+      We've eliminated the repetition of the DFDL properties by
+      moving them into a shared type definition for unitNumber and
+      timeOfDay.
+      -->
+      <element name="trackNum" type="fakeTDL:unitNumber"/>
+      <element name="time" type="fakeTDL:timeOfDay"/>
+      <element name="lat" type="fakeTDL:latitude_degrees"/>
+      <element name="lon" type="fakeTDL:longitude_degrees"/>
+      <element name="elev" type="fakeTDL:elevation_25FeetMSL"/>
+      <element name="pointType" type="fakeTDL:trackPointType"/>
+      <element name="quality" type="fakeTDL:trackPointQuality"/>
+      <!--
+      Units of measure for course are degrees also, but only integer values
+      so the suffix is _integerDegrees to distinguish from the more
+      typical float-valued degrees.
+      -->
+      <element name="course" type="fakeTDL:course_integerDegrees"/>
+      <element name="speed" type="fakeTDL:speed_dataMilesPerHour"/>
+    </sequence>
+  </complexType>
+
+  <!--
+  Below here are all the type definitions used by the fields above.
+
+  In a larger schema these should probably go together in
+  a separate DFDL schema file named fakeTDLFieldTypes.dfdl.xsd,
+  but as this is a small example we're just putting them all
+  in the same file.
+  -->
+
+  <simpleType name="unitNumber"
+              dfdl:lengthKind="implicit">
+    <restriction base="xs:string">
+      <minLength value="5"/>
+      <maxLength value="5"/>
+      <!--
+      Note that the XML Schema dialect of regular expressions
+      allowed in these pattern facets
+      is very minimal compared to the regular expressions allowed
+      in DFDL properties like dfdl:lengthPattern.
+      -->
+      <pattern value="[A-Z0-9]{2}[0-9]{3}"/>
+    </restriction>
+  </simpleType>
+
+  <!--
+  DFDL refers to date and time related concepts collectively with the term "calendar", which
+  is a convention also used by many Java libraries.
+  -->
+  <simpleType name="timeOfDay"
+              dfdl:calendarPatternKind="explicit"
+              dfdl:calendarPattern="hhmmss"
+              dfdl:binaryCalendarRep="bcd"
+              dfdl:lengthKind="explicit"
+              dfdl:length="3">
+    <restriction base="xs:time"/>
+  </simpleType>
+
+  <simpleType name="mustAck"
+              dfdl:binaryBooleanFalseRep="0"
+              dfdl:binaryBooleanTrueRep="1"
+              dfdl:lengthKind="explicit"
+              dfdl:length="1">
+    <restriction base="xs:boolean"/>
+  </simpleType>
+
+  <simpleType name="messageID"
+              dfdl:lengthKind="implicit">
+    <restriction base="xs:unsignedInt">
+      <maxInclusive value="99999"/>
+    </restriction>
+  </simpleType>
+
+  <simpleType name="latitude_degrees"
+              dfdl:binaryFloatRep="ieee"
+              dfdl:lengthKind="implicit">
+    <!--
+    Note added dfdl:binaryFloatRep="ieee" which is part of
+    DFDLGeneralFormat, so is in the default DFDL properties.
+    However, as a way of making this simpleType self-documenting
+    it is useful to repeat it here.
+    -->
+    <restriction base="xs:float">
+      <minInclusive value="-90.0"/>
+      <maxInclusive value="90.0"/>
+    </restriction>
+  </simpleType>
+
+  <simpleType name="longitude_degrees"
+              dfdl:binaryFloatRep="ieee"
+              dfdl:lengthKind="implicit">
+    <annotation><appinfo source="http://www.ogf.org/dfdl/">
+      <!--
+      Here is a commented-out assertion that illustrates a bad practice that
+      DFDL beginners often seem to do.
+
+      The idea is to insert dfdl:assert that enforce validity as well
+      as well-formedness on the data. I.e., why bother with more parsing
+      if the data is invalid?
+
+      A dfdl:assert of dfdl:checkConstraints tells the DFDL parser to validate
+      the well-formed data against the facets and, if it fails, to escalate
+      that to a parse error.
+
+      This is a bad idea for a number of reasons
+      (1) you cannot use the schema to parse invalid data and study it
+      (2) improper separation of concerns - applications might require use of a
+          separate validator.
+      (3) DFDL speculative parsing backtracks and tries other possibilities on
+          parse errors. Data having invalid values is usually NOT a reason to
+          backtrack and try other alternatives if the data is well-formed.
+
+      <dfdl:assert>{ dfdl:checkConstraints(.) }</dfdl:assert>
+
+      There are reasons to use checkConstraints, but forcing validity
+      on the parse process is not one of them.
+      -->
+    </appinfo></annotation>
+    <restriction base="xs:float">
+      <minInclusive value="-180.0"/>
+      <maxInclusive value="180.0"/>
+    </restriction>
+  </simpleType>
+
+  <simpleType name="elevation_25FeetMSL"
+              dfdl:lengthKind="implicit">
+    <annotation><documentation>
+      Units are 25 feet above Mean Sea Level.
+    </documentation></annotation>
+    <restriction base="xs:short">
+      <minInclusive value="-1000"/>
+      <maxInclusive value="32000"/>
+    </restriction>
+  </simpleType>
+
+  <simpleType name="trackPointType" dfdl:lengthKind="implicit">
+    <restriction base="xs:string">
+      <minLength value="1"/>
+      <maxLength value="1"/>
+      <enumeration value="S"/><!-- start point -->
+      <enumeration value="W"/><!-- way point -->
+      <enumeration value="E"/><!-- end point -->
+    </restriction>
+  </simpleType>
+
+  <simpleType name="trackPointQuality">
+    <restriction base="xs:string">
+      <minLength value="1"/>
+      <maxLength value="1"/>
+      <enumeration value="E"/><!-- estimated -->
+      <enumeration value="A"/><!-- actual or observed -->
+    </restriction>
+  </simpleType>
+
+  <simpleType name="course_integerDegrees"
+              dfdl:lengthKind="implicit">
+    <restriction base="xs:unsignedShort">
+      <minInclusive value="0"/>
+      <maxInclusive value="359"/>
+    </restriction>
+  </simpleType>
+
+  <simpleType name="speed_dataMilesPerHour"
+              dfdl:lengthKind="implicit">
+    <annotation><documentation>
+      Units are data-miles per hour. A data-mile is 6000 feet.
+    </documentation></annotation>
+    <restriction base="xs:unsignedShort">
+      <maxInclusive value="2000"/>
+    </restriction>
+  </simpleType>
+
+
+</schema>

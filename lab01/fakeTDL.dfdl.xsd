@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<schema
+  xmlns="http://www.w3.org/2001/XMLSchema"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:fn="http://www.w3.org/2005/xpath-functions"
+  xmlns:dfdl="http://www.ogf.org/dfdl/dfdl-1.0/"
+  xmlns:fakeTDL="urn:com.owlcyberdefense.fakeTDL"
+  targetNamespace="urn:com.owlcyberdefense.fakeTDL">
+
+  <!--
+  Using DFDLGeneralFormat as a basis
+
+  Including this and using it in our format avoids the need to
+  define values for 20+ properties that we just want typical default
+  values for. Examples are sequenceKind="ordered", ignoreCase="no".
+
+  DFDL requires you to be explicit about exactly what all properties
+  values are. Hence, if we want default values for these 20+ properties
+  we have to specify where we're getting those default values.
+
+  For a look at all the property definitions in DFDLGeneralFormat.dfdl.xsd, go to
+  https://s.apache.org/daffodil-DFDLGeneralFormat.dfdl.xsd and
+  https://s.apache.org/daffodil-DFDLGeneralFormatBase.dfdl.xsd
+  -->
+  <include schemaLocation="/org/apache/daffodil/xsd/DFDLGeneralFormat.dfdl.xsd" />
+
+  <annotation>
+    <appinfo source="http://www.ogf.org/dfdl/">
+
+      <!--
+      This format applies to the whole file.
+      Note that we do NOT prefix the property names with "dfdl:" because this
+      whole structure is a dfdl:format element already.
+
+      The 'ref' property is what starts this off extending the
+      DFDLGeneralFormat imported above.
+      -->
+      <dfdl:format
+        ref="fakeTDL:GeneralFormat"
+        representation="binary"
+        binaryNumberRep="binary"
+        byteOrder="bigEndian"
+        lengthKind="implicit"
+        lengthUnits="bytes"
+        alignmentUnits="bytes"
+        alignment="1"
+        encoding="ascii"
+        fillByte='X'
+      />
+    </appinfo>
+  </annotation>
+
+  <!--
+   Root aka global element declaration for one fakeTDL message
+
+   Best practice: make global element declarations be one-liners like this.
+   Put the complexity in the complex type definition it uses.
+   -->
+  <element name="fakeTDL" type="fakeTDL:fakeTDLType" dfdl:lengthKind="explicit" dfdl:length="64"/>
+
+  <!--
+  This complex type starts the guts of the schema.
+
+  If someone wants to use this schema, but wants to name their element "msg" or other
+  name of their choosing, they can use this type, and ignore the global element declarations.
+  -->
+  <complexType name="fakeTDLType">
+    <choice>
+      <element name="track" type="fakeTDL:trackMessageType" dfdl:initiator="T"/>
+      <!--
+      At some point there will be other message types here.
+      -->
+    </choice>
+  </complexType>
+
+  <complexType name="trackMessageType">
+    <sequence>
+      <element name="source" type="xs:string" dfdl:lengthKind="explicit" dfdl:length="5"/>
+      <!--
+      Lab Exercise: Fill in more fields and their properties so that we can parse test_track_good_01.dat
+      and get the XML in test_track_good_01.xml.
+
+      Some of what you need is supplied in this comment to save typing and give you a starting point.
+
+      Before you do anything though use this schema as is to parse, via the command line:
+
+          daffodil parse -s fakeTDL.dfdl.xsd test_track_good_01.dat
+
+      It will parse, but only two fields/elements (defined immediately above this comment)
+      will show up in the output XML.
+      -->
+      <!-- ****** Add the sendTime element ******
+
+      The first new element we need to add is the 'sendTime' element. Here's the declaration
+      minus the DFDL properties.
+
+      <element name="sendTime" type="xs:time" dfdl:lengthKind="explicit" dfdl:length="3" />
+
+      In DFDL as in Java, date and time types are referred to as "calendar"; hence the
+      properties dfdl:binaryCalendarRep and dfdl:calendarPattern which you will need to add
+      to the element declaration.
+
+      Lookup those properties in the DFDL spec., add them to the element declaration.
+      Then try parsing again with the daffodil command line (from above).
+
+      Did you get a "Schema Definition Error" that indicates you are missing a property?
+      Add that property also and try parsing again.
+      -->
+      <!-- ****** Add the mustAck element ******
+
+      This next boolean field needs a length, and also one must provide properties to tell it
+      what values are true and false.
+
+      Look in the DFDL Spec for section 13.10 "Properties Specific to Boolean with Binary Representation"
+
+      <element name="mustAck" type="xs:boolean" dfdl:lengthKind="explicit" dfdl:length="1"/>
+
+      Once you have added the properties, test the parse again.
+      -->
+      <!-- ****** Add the messageID element *****
+
+      For this messageID, look in the DFDL Spec for dfdl:lengthKind 'implicit'. (Table 19, Section 12.3.3)
+      You may want to take advantage of dfdl:lengthKind 'implicit' and use it for several of the types.
+      (float, short, unsignedShort, unsignedInt)
+
+      <element name="messageID" type="xs:unsignedInt"/>
+      -->
+      <!-- ***** Add the sourceLat, sourceLon, and sourceElev elements ******
+
+      Tricky: You don't actually need to add any properties!
+      In dfdl:representation="binary" with dfdl:lengthKind="implicit", the default length
+      of a float is already 32-bits/4-bytes which is what we require.
+
+      <element name="sourceLat" type="xs:float"/>
+      <element name="sourceLon" type="xs:float"/>
+      <element name="sourceElev" type="xs:short"/>
+
+      -->
+      <!-- ****** Add the trackNum element ******
+
+      You will need the same properties as the source element above for this trackNum element.
+      For now you can cut/paste a copy here. The alternative is to define a shared
+      simpleType definition, put the properties there, and share the definition from above
+      and here. We will examine this extensively in a later lab.
+
+      <element name="trackNum" type="xs:string"/>
+      -->
+      <!-- ****** Add the time element ******
+
+      You will need the same properties as sendTime element above here for this time element.
+      Again you can copy/paste for now, as we'll change this to a shared definition later.
+
+      <element name="time" type="xs:time"/>
+      -->
+      <!-- ****** Add the remaining elements ******
+
+      The remaining 7 fields/elements should work as is. You shouldn't need to further modify.
+
+      <element name="lat" type="xs:float"/>
+      <element name="lon" type="xs:float"/>
+      <element name="elev" type="xs:short"/>
+      <element name="pointType" type="xs:string" dfdl:lengthKind="explicit" dfdl:length="1"/>
+      <element name="quality" type="xs:string" dfdl:lengthKind="explicit" dfdl:length="1"/>
+      <element name="course" type="xs:unsignedShort"/>
+      <element name="speed" type="xs:unsignedShort"/>
+
+      -->
+    </sequence>
+  </complexType>
+
+</schema>

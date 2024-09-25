@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+TDML is a convenient way to package tests of DFDL schemas and test data
+
+There are a few extra namespace prefix definitions here that aren't used yet,
+but they are commonly needed so we have them here for future convenience.
+-->
+<tdml:testSuite
+  xmlns:tdml="http://www.ibm.com/xmlns/dfdl/testData"
+  xmlns:dfdl="http://www.ogf.org/dfdl/dfdl-1.0/"
+  xmlns:fn="http://www.w3.org/2005/xpath-functions"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:fakeTDL="urn:com.owlcyberdefense.fakeTDL"
+  defaultRoundTrip="onePass"
+  defaultValidation="limited">
+
+  <!--
+  This is a positive parser test case.
+  It combines together a file of input data to parse (called 'document' in TDML)
+  along with an expected infoset of XML that is the expected parse output.
+
+  Above you see defaultRoundTrip="onePass". That means that besides doing the parse
+  and verifying the expected XML, the test will then unparse the XML to see if
+  the output from the unparse is identical to the original data document.
+  Both directions, parse and unparse, must succeed for the test to pass.
+  -->
+  <tdml:parserTestCase name="test_track_good_01" root="fakeTDL" model="fakeTDL.dfdl.xsd">
+    <tdml:document>
+      <tdml:documentPart type="file">test_track_good_01.dat</tdml:documentPart>
+    </tdml:document>
+    <tdml:infoset>
+      <tdml:dfdlInfoset type="file">test_track_good_01.xml</tdml:dfdlInfoset>
+    </tdml:infoset>
+  </tdml:parserTestCase>
+
+  <!--
+  This is the same test as the one above, just with the data embedded here
+  directly as hex text, and with the expected infoset expressed directly in
+  this file as well.
+
+  These sort of self-contained tests where the data is just embedded in the TDML
+  file can be very convenient.
+  -->
+  <tdml:parserTestCase name="test_track_good_02" root="fakeTDL" model="fakeTDL.dfdl.xsd">
+    <tdml:document>
+      <tdml:documentPart type="byte">
+        5441 4731 3233 0102 0300 0000 0001 4224
+        0000 c28c 0000 0190 5555 3737 3701 0201
+        4224 6666 c28b cccd 015e 5741 004b 00c8
+        5858 5858 5858 5858 5858 5858 5858 5858
+      </tdml:documentPart>
+    </tdml:document>
+    <tdml:infoset>
+      <tdml:dfdlInfoset>
+        <fakeTDL:fakeTDL>
+          <messageType>T</messageType>
+          <track>
+            <source>AG123</source>
+            <sendTime>01:02:03</sendTime>
+            <mustAck>false</mustAck>
+            <messageID>1</messageID>
+            <sourceLat>41.0</sourceLat>
+            <sourceLon>-70.0</sourceLon>
+            <sourceElev>400</sourceElev>
+            <trackNum>UU777</trackNum>
+            <time>01:02:01</time>
+            <lat>41.1</lat>
+            <lon>-69.9</lon>
+            <elev>350</elev>
+            <pointType>W</pointType>
+            <quality>A</quality>
+            <course>75</course>
+            <speed>200</speed>
+          </track>
+        </fakeTDL:fakeTDL>
+      </tdml:dfdlInfoset>
+    </tdml:infoset>
+  </tdml:parserTestCase>
+
+  <!--
+ This is a negative test similar to the one above
+ but detecting that the data, while well-formed, has an invalid value for the
+ <course>587</course> element which is supposed to be an angle 0 to 359.
+ -->
+  <tdml:parserTestCase name="test_track_invalid_01" root="fakeTDL" model="fakeTDL.dfdl.xsd">
+    <tdml:document>
+      <tdml:documentPart type="byte">
+        5441 4731 3233 0102 0300 0000 0001 4224
+        0000 c28c 0000 0190 5555 3737 3701 0201
+        4224 6666 c28b cccd 015e 5741 024b 00c8
+        5858 5858 5858 5858 5858 5858 5858 5858
+      </tdml:documentPart>
+    </tdml:document>
+    <tdml:infoset>
+      <tdml:dfdlInfoset>
+        <fakeTDL:fakeTDL>
+          <messageType>T</messageType>
+          <track>
+            <source>AG123</source>
+            <sendTime>01:02:03</sendTime>
+            <mustAck>false</mustAck>
+            <messageID>1</messageID>
+            <sourceLat>41.0</sourceLat>
+            <sourceLon>-70.0</sourceLon>
+            <sourceElev>400</sourceElev>
+            <trackNum>UU777</trackNum>
+            <time>01:02:01</time>
+            <lat>41.1</lat>
+            <lon>-69.9</lon>
+            <elev>350</elev>
+            <pointType>W</pointType>
+            <quality>A</quality>
+            <course>587</course><!-- This is invalid. Out of range 0 to 359 degrees -->
+            <speed>200</speed>
+          </track>
+        </fakeTDL:fakeTDL>
+      </tdml:dfdlInfoset>
+    </tdml:infoset>
+    <!--
+    Enable this check for a validation error
+    -->
+    <tdml:validationErrors>
+      <tdml:error>maxInclusive</tdml:error>
+      <tdml:error>359</tdml:error>
+    </tdml:validationErrors>
+  </tdml:parserTestCase>
+
+
+  <!--
+  This is a negative parser test case.
+
+  It differs from the above positive parser test case by not having an
+  expected infoset at all. Instead it contains error strings. These strings
+  must be found in the diagnostic error messages from the parse in order for the
+  test to pass. (The string comparison to find the error strings is case-insensitive.)
+  -->
+  <parserTestCase name="test_track_bad_01" root="fakeTDL" model="fakeTDL.dfdl.xsd">
+    <document>
+      <documentPart type="file">test_track_bad_01.dat</documentPart>
+    </document>
+    <errors>
+      <error>Parse Error</error>
+      <error>Insufficient bits</error>
+    </errors>
+  </parserTestCase>
+
+  <!--
+  This is a negative unparser test case.
+
+  Above we saw that parserTestCase run with round trip "onePass" tests both parsing
+  and unparsing for positive test cases. So we don't need to create both parserTestCase
+  and unparserTestCase for positive tests.
+
+  To ensure errors are detected by the unparser, we need separate negative
+  unparser test cases.
+
+  The input is an XML infoset. The expected error strings must be found (case
+  insensitive matching) in the diagnostic error messages from the unparser.
+  -->
+  <unparserTestCase name="test_track_bad_02" root="fakeTDL" model="fakeTDL.dfdl.xsd">
+    <infoset>
+      <dfdlInfoset type="file">test_track_bad_02.xml</dfdlInfoset>
+    </infoset>
+    <errors>
+      <error>Unparse Error</error>
+      <error>xs:time</error>
+      <error>26:99</error>
+    </errors>
+  </unparserTestCase>
+
+  <tdml:parserTestCase name="test_track_invalid_02" root="fakeTDL" model="fakeTDL.dfdl.xsd">
+    <tdml:document>
+      <!--
+      Almost every field in the data below has a
+      well-formed, but invalid value.
+      -->
+      <tdml:documentPart type="byte">
+        5441 4731 325A 0102 0300 0000 0001 446B
+        4000 C472 8000 FC17 5859 5A5A 5901 0201
+        4452 4666 C459 799A 7D01 5851 024B 07D1
+        5858 5858 5858 5858 5858 5858 5858 5858
+      </tdml:documentPart>
+    </tdml:document>
+    <tdml:infoset>
+      <tdml:dfdlInfoset>
+        <fakeTDL:fakeTDL>
+          <messageType>T</messageType>
+          <track>
+            <source>AG12Z</source>
+            <sendTime>01:02:03</sendTime>
+            <mustAck>false</mustAck>
+            <messageID>1</messageID>
+            <sourceLat>941.0</sourceLat>
+            <sourceLon>-970.0</sourceLon>
+            <sourceElev>-1001</sourceElev>
+            <trackNum>XYZZY</trackNum>
+            <time>01:02:01</time>
+            <lat>841.1</lat>
+            <lon>-869.9</lon>
+            <elev>32001</elev>
+            <pointType>X</pointType>
+            <quality>Q</quality>
+            <course>587</course>
+            <speed>2001</speed>
+          </track>
+        </fakeTDL:fakeTDL>
+      </tdml:dfdlInfoset>
+    </tdml:infoset>
+    <tdml:validationErrors>
+      <error>quality</error>
+      <error>enumeration</error>
+      <error>E|A</error>
+      <error>sourceElev</error>
+      <error>minInclusive</error>
+      <error>-1000</error>
+      <error>pointType</error>
+      <error>S|W|E</error>
+      <error>sourceLon</error>
+      <error>-180</error>
+      <error>trackNum</error>
+      <error>pattern</error>
+      <error>[A-Z0-9]{2}[0-9]{3}</error>
+      <error>lon</error>
+      <error>course</error>
+      <error>maxInclusive</error>
+      <error>359</error>
+      <error>lat</error>
+      <error>90.0</error>
+      <error>speed</error>
+      <error>2000</error>
+      <error>source</error>
+      <error>elev</error>
+      <error>32000</error>
+    </tdml:validationErrors>
+  </tdml:parserTestCase>
+
+  <!--
+   This is a positive parser test case of a whole file of multiple
+   fakeTDL messages.
+
+   The root element is fakeTDLFile now.
+   -->
+  <tdml:parserTestCase name="test_file_01" root="fakeTDLFile" model="fakeTDL.dfdl.xsd">
+    <tdml:document>
+      <tdml:documentPart type="file">test_file_01.dat</tdml:documentPart>
+    </tdml:document>
+    <tdml:infoset>
+      <tdml:dfdlInfoset type="file">test_file_01.xml</tdml:dfdlInfoset>
+    </tdml:infoset>
+  </tdml:parserTestCase>
+
+  <!--
+  This is a negative parser test case of a whole file of multiple
+  fakeTDL messages.
+  -->
+  <tdml:parserTestCase name="test_file_bad_01" root="fakeTDLFile" model="fakeTDL.dfdl.xsd">
+    <tdml:document>
+      <tdml:documentPart type="file">test_file_bad_01.dat</tdml:documentPart>
+    </tdml:document>
+    <tdml:errors>
+      <!--
+      Exercise: try this test without the discriminator inside the fakeTDLFile element
+      of the schema.
+
+      Without the discriminator in the fakeTDLFile to control the DFDL _point of uncertainty_
+      about the length of the array of fakeTDL messages, this parse will stop
+      at the first failure to parse, back up to before it, and end the array.
+
+      Hence, this will not consume all the data, will create an infoset, and we will get
+      an error about left over data which will not tell us anything about why the parse
+      failed.
+      -->
+      <tdml:error>left over data</tdml:error>
+      <!--
+      Once we add the discriminator, the point of uncertainty about whether there is another
+      fakeTDL message in the file is resolved. If there is more data, the discriminator
+      evaluates to true which tells the parser there IS another array element, which means
+      another fakeTDL message.
+
+      However, our test data file doesn't contain a whole additional fakeTDL message. So this
+      parse attempt will fail, but now we will get a diagnostic about why it failed.
+
+      So once you add the discriminator to the fakeTDLFile element in the schema you can
+      comment out the left over data expected error string above, and comment back in
+      the parse error about insufficient data below.
+      -->
+      <!--
+      <tdml:error>Parse Error</tdml:error>
+      <tdml:error>insufficient</tdml:error>
+       -->
+    </tdml:errors>
+  </tdml:parserTestCase>
+
+</tdml:testSuite>

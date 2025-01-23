@@ -60,22 +60,46 @@
   <element name="fakeTDL" type="fakeTDL:fakeTDLType" dfdl:lengthKind="explicit" dfdl:length="64"/>
 
   <complexType name="fakeTDLType">
-    <choice dfdl:initiatedContent="yes">
-      <element name="track" type="fakeTDL:trackMessageType" dfdl:initiator="T"/>
-      <element name="identity" type="fakeTDL:identityMessageType" dfdl:initiator="D"/>
-      <element name="ack" type="fakeTDL:ackMessageType" dfdl:initiator="A"/>
+    <sequence>
       <!--
-      As of Daffodil release 3.9.0 and prior releases, if there are a large number of
-      different messages in this choice, this will be inefficient as it is going to try
-      one after another until it finds one where the initiator matches.
-
-      If you'd like to see a constant time technique that works today in Daffodil
-      for a large number of message types, look at the way the message type dispatch
-      works in the DFDLSchemas fakeTDL project on github.
-
-      For purposes of this training lab we'll just keep this simple and use dfdl:initiatedContent="yes"
+      We now need a messageType field.
       -->
-    </choice>
+      <element name="messageType" type="fakeTDL:messageType"/>
+      <!--
+      Note that the above messageType element must be kept in synch with
+      the kind of message (track, identity, or ack) element that comes after
+      it.
+      We might want to compute messageType when unparsing, but the schema
+      does *not* have this DFDL property:
+         dfdl:outputValueCalc='{
+          if (fn:exists(../track)) then "T"
+          else if (fn:exists(../identity)) then "D"
+          else if (fn:exists(../ack)) then "A"
+          else fn:error("Message did not contain track, identity, or ack element")
+        }'
+       This is because that property would be a linear chain of tests. Not so bad for just 3
+       message types, but in a real format with dozens or hundreds of message types, this is
+       a big linear search which would eliminate the benefit of using a choice-by-dispatch
+       to begin with.
+
+       DFDL v1.0 doesn't have a really good solution to this problem. DFDL v1.0 has
+       unparsing capabilities, but these have limitations, and this is an example of
+       one of them: Choice-by-dispatch for parsing provides constant-time branch selection,
+       but it as no corresponding symmetric constant-time unparsing feature.
+        -->
+      <choice dfdl:choiceDispatchKey="{ messageType }">
+        <element name="track" type="fakeTDL:trackMessageType" dfdl:choiceBranchKey="T"/>
+        <element name="identity" type="fakeTDL:identityMessageType" dfdl:choiceBranchKey="D"/>
+        <element name="ack" type="fakeTDL:ackMessageType" dfdl:choiceBranchKey="A"/>
+        <!--
+        dfdl:choiceDispatchKey selects the branch with the matching dfdl:choiceBranchKey
+        in constant time (using a hash table lookup). It avoids any point of uncertainty
+        in the parsing.
+
+        So this is the technique to use if there are a large number of message types.
+        -->
+      </choice>
+    </sequence>
   </complexType>
 
   <group name="everyMessageFields">

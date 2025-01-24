@@ -1,6 +1,5 @@
 <fakeTDL>
   <!-- this message XML has some things wrong with it -->
-  <messageType>T</messageType>
   <track>
     <source>AG12</source><!-- this source is not 5 characters -->
     <sendTime>26:99</sendTime> <!-- invalid hour, invalid minutes, and has no seconds component -->

@@ -232,4 +232,58 @@ but they are commonly needed so we have them here for future convenience.
     </tdml:validationErrors>
   </tdml:parserTestCase>
 
+  <tdml:parserTestCase name="test_identity_01" root="fakeTDL" model="fakeTDL.dfdl.xsd">
+    <tdml:document>
+      <tdml:documentPart type="byte">
+        4441 4731 3233 0102 0401 0000 0002 5555
+        3737 3701 0202 4641 0000 4845 5243 554C
+        4553 5F43 5F31 3330 5F43 342F 4335 284A
+        2900 0000 0000 0000 0000 0000 0000 0000
+      </tdml:documentPart>
+    </tdml:document>
+    <tdml:infoset>
+      <tdml:dfdlInfoset>
+        <fakeTDL:fakeTDL xmlns="">
+          <identity>
+            <source>AG123</source>
+            <sendTime>01:02:04</sendTime>
+            <mustAck>true</mustAck>
+            <messageID>2</messageID>
+            <trackNum>UU777</trackNum>
+            <time>01:02:02</time>
+            <iff>F</iff>
+            <cat>A</cat>
+            <type>0</type>
+            <desc>HERCULES_C_130_C4/C5(J)</desc>
+          </identity>
+        </fakeTDL:fakeTDL>
+      </tdml:dfdlInfoset>
+    </tdml:infoset>
+  </tdml:parserTestCase>
+
+  <tdml:parserTestCase name="test_ack_01" root="fakeTDL" model="fakeTDL.dfdl.xsd">
+    <tdml:document>
+      <tdml:documentPart type="byte">
+        4142 4532 3334 0102 1441 4731 3233 0001
+        0000 0002 5858 5858 5858 5858 5858 5858
+        5858 5858 5858 5858 5858 5858 5858 5858
+        5858 5858 5858 5858 5858 5858 5858 5858
+      </tdml:documentPart>
+    </tdml:document>
+    <tdml:infoset>
+      <tdml:dfdlInfoset>
+        <fakeTDL:fakeTDL xmlns="">
+          <ack>
+            <source>BE234</source>
+            <sendTime>01:02:14</sendTime>
+            <dest>AG123</dest>
+            <ackID>
+              <count>1</count>
+              <item>2</item>
+            </ackID>
+          </ack>
+        </fakeTDL:fakeTDL>
+      </tdml:dfdlInfoset>
+    </tdml:infoset>
+  </tdml:parserTestCase>
 </tdml:testSuite>

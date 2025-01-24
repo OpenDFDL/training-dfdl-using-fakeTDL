@@ -8,11 +8,34 @@
   xmlns:fakeTDL="urn:com.owlcyberdefense.fakeTDL"
   targetNamespace="urn:com.owlcyberdefense.fakeTDL">
 
+  <!--
+  Using DFDLGeneralFormat as a basis
+
+  Including this and using it in our format avoids the need to
+  define values for 20+ properties that we just want typical default
+  values for. Examples are sequenceKind="ordered", ignoreCase="no".
+
+  DFDL requires you to be explicit about exactly what all properties
+  values are. Hence, if we want default values for these 20+ properties
+  we have to specify where we're getting those default values.
+
+  For a look at all the property definitions in DFDLGeneralFormat.dfdl.xsd, go to
+  https://s.apache.org/daffodil-DFDLGeneralFormat.dfdl.xsd and
+  https://s.apache.org/daffodil-DFDLGeneralFormatBase.dfdl.xsd
+  -->
   <include schemaLocation="/org/apache/daffodil/xsd/DFDLGeneralFormat.dfdl.xsd" />
 
   <annotation>
     <appinfo source="http://www.ogf.org/dfdl/">
 
+      <!--
+      This format applies to the whole file.
+      Note that we do NOT prefix the property names with "dfdl:" because this
+      whole structure is a dfdl:format element already.
+
+      The 'ref' property is what starts this off extending the
+      DFDLGeneralFormat imported above.
+      -->
       <dfdl:format
         ref="fakeTDL:GeneralFormat"
         representation="binary"
@@ -37,25 +60,22 @@
   <element name="fakeTDL" type="fakeTDL:fakeTDLType" dfdl:lengthKind="explicit" dfdl:length="64"/>
 
   <complexType name="fakeTDLType">
-    <sequence>
+    <choice dfdl:initiatedContent="yes">
+      <element name="track" type="fakeTDL:trackMessageType" dfdl:initiator="T"/>
+      <element name="identity" type="fakeTDL:identityMessageType" dfdl:initiator="D"/>
+      <element name="ack" type="fakeTDL:ackMessageType" dfdl:initiator="A"/>
       <!--
-      We now need a messageType field. This replaces the initiators from before with
-      an explicit field to hold the message type.
-      -->
-      <element name="messageType" type="fakeTDL:messageType"/>
-      <choice dfdl:choiceDispatchKey="{ messageType }">
-        <element name="track" type="fakeTDL:trackMessageType" dfdl:choiceBranchKey="T"/>
-        <element name="identity" type="fakeTDL:identityMessageType" dfdl:choiceBranchKey="D"/>
-        <element name="ack" type="fakeTDL:ackMessageType" dfdl:choiceBranchKey="A"/>
-        <!--
-        dfdl:choiceDispatchKey selects the branch with the matching dfdl:choiceBranchKey
-        in constant time (using a hash table lookup). It avoids any point of uncertainty
-        in the parsing.
+      As of Daffodil release 3.9.0 and prior releases, if there are a large number of
+      different messages in this choice, this will be inefficient as it is going to try
+      one after another until it finds one where the initiator matches.
 
-        So this is the technique to use if there are a large number of message types.
-        -->
-      </choice>
-    </sequence>
+      If you'd like to see a constant time technique that works today in Daffodil
+      for a large number of message types, look at the way the message type dispatch
+      works in the DFDLSchemas fakeTDL project on github.
+
+      For purposes of this training lab we'll just keep this simple and use dfdl:initiatedContent="yes"
+      -->
+    </choice>
   </complexType>
 
   <group name="everyMessageFields">
@@ -153,16 +173,6 @@
   but as this is a small example we're just putting them all
   in the same file.
   -->
-  <simpleType name="messageType"
-              dfdl:lengthKind="implicit">
-    <restriction base="xs:string" >
-      <minLength value="1"/>
-      <maxLength value="1"/>
-      <enumeration value="T"/><!-- Track -->
-      <enumeration value="D"/><!-- D for iDentity -->
-      <enumeration value="A"/><!-- Ack -->
-    </restriction>
-  </simpleType>
 
   <simpleType name="unitNumber"
               dfdl:lengthKind="implicit">
@@ -354,6 +364,7 @@
               dfdl:textTrimKind="padChar"
               dfdl:textPadKind="padChar"
               dfdl:textStringPadCharacter="%#r00;"
+              dfdl:textStringJustification="left"
               dfdl:lengthKind="explicit"
               dfdl:length="38">
     <annotation><documentation>

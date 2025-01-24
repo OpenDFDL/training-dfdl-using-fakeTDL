@@ -13,15 +13,18 @@ cybersecurity system, and maintaining it over time, easier.
   - This requires dividing the schema and the test artifacts into src and test 
     directories.
 - Splitting the single large schema file into multiple files in a sensible manner
-  - fakeTDL-base.dfdl.xsd - base format reused by other files
-  - fakeTDL.dfdl.xsd - global element declarations for fakeTDL and fakeTDLFile
+  - `fakeTDL-base.dfdl.xsd` - base format reused by other files
+  - `fakeTDL.dfdl.xsd` - global element declarations for fakeTDL and fakeTDLFile
     - This schema file has no target namespace so our XML no longer has
     any namespace prefixes. 
-  - fakeTDLType.dfdl.xsd - primary type (fakeTDLType), and message definitions
-  - fakeTDL-field-types.dfdl.xsd - types of the message fields
-  - fakeTDL-enum-entityTypeDetails.dfdl.xsd - enum type definition
+  - `fakeTDLType.dfdl.xsd` - primary type (fakeTDLType), and message definitions
+  - `fakeTDL-field-types.dfdl.xsd` - types of the message fields
+  - `fakeTDL-enum-entityTypeDetails.dfdl.xsd` - enum type definition
+- Add a fakeTDLFile global element in the `fakeTDL.dfdl.xsd` file.
+  - This adds the ability to test whole files of messages at once, and the
+  `test_file_01.dat/xml` are test data which show this being used. 
 
-- Add .gitattributes file to specify the ".dat" files are binary, not text. 
+- Add `.gitattributes` file to specify the ".dat" files are binary, not text. 
 
 ## Compiling the Schema to Daffodil ".bin" Binary Form
 This will construct all the compiled daffodil ".bin" binaries, placing them
@@ -30,11 +33,13 @@ into the target directory.
 The specific versions of Daffodil it will use
 are specified in the build.sbt file. 
 
-    sbt daffodilPackageBin
+    sbt packageDaffodilBin
+
+will construct all the corresponding ".bin" binary files giving them names
+which clarify the Daffodil version they are compiled for. 
 
 ## Regression Testing
 
 This will run all the TDML tests:
 
-    DAFFODIL_CLASSPATH=src:test
     daffodil test -i test/TestFakeTDL.tdml

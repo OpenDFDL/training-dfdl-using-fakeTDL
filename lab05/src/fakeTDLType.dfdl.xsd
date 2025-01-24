@@ -20,25 +20,22 @@
   </annotation>
 
   <complexType name="fakeTDLType">
-    <sequence>
+    <choice dfdl:initiatedContent="yes">
+      <element name="track" type="fakeTDL:trackMessageType" dfdl:initiator="T"/>
+      <element name="identity" type="fakeTDL:identityMessageType" dfdl:initiator="D"/>
+      <element name="ack" type="fakeTDL:ackMessageType" dfdl:initiator="A"/>
       <!--
-      We now need a messageType field. This replaces the initiators from before with
-      an explicit field to hold the message type.
-      -->
-      <element name="messageType" type="fakeTDL:messageType"/>
-      <choice dfdl:choiceDispatchKey="{ messageType }">
-        <element name="track" type="fakeTDL:trackMessageType" dfdl:choiceBranchKey="T"/>
-        <element name="identity" type="fakeTDL:identityMessageType" dfdl:choiceBranchKey="D"/>
-        <element name="ack" type="fakeTDL:ackMessageType" dfdl:choiceBranchKey="A"/>
-        <!--
-        dfdl:choiceDispatchKey selects the branch with the matching dfdl:choiceBranchKey
-        in constant time (using a hash table lookup). It avoids any point of uncertainty
-        in the parsing.
+      As of Daffodil release 3.10.0 and prior releases, if there are a large number of
+      different messages in this choice, this will be inefficient as it is going to try
+      one after another until it finds one where the initiator matches.
 
-        So this is the technique to use if there are a large number of message types.
+      If you'd like to see a constant time technique that works today in Daffodil
+      for a large number of message types, look at the way the message type dispatch
+      works in the DFDLSchemas fakeTDL project on github.
+
+      For purposes of this training lab we'll just keep this simple and use dfdl:initiatedContent="yes"
         -->
-      </choice>
-    </sequence>
+    </choice>
   </complexType>
 
   <group name="everyMessageFields">

@@ -12,7 +12,7 @@ Take a quick look at a track message.
 
 Parse it to XML using the schema via the daffodil command line interface (CLI):
  
-   daffodil parse -s fakeTDL.dfdl.xsd test_track_good_01.dat
+    daffodil parse -s fakeTDL.dfdl.xsd test_track_good_01.dat
 
 This outputs just one field at the start of the track message. 
 
@@ -27,16 +27,16 @@ You can also do some negative testing. Try:
 
     daffodil parse -s fakeTDL.dfdl.xsd test_track_bad_01.dat
 
-That will give you a Parse Error. That file doesn't have enough data for a whole message.
+That will give you a _Parse Error_. That file doesn't have enough data for a whole message.
 
-Now try an unparse, from some bad XML.
+Now try an _unparse_, from some bad XML.
 
     daffodil unparse -s fakeTDL.dfdl.xsd test_track_bad_02.xml
 
-That will give you an Unparse Error. Take a look at test_track_bad_02.xml to see that
+That will give you an _Unparse Error_. Take a look at test_track_bad_02.xml to see that
 there is much wrong with it. 
 
-Parse Error and Unparse Error are collectively called Processing Errors. They indicate 
+Parse Error and Unparse Error are collectively called _Processing Errors_. They indicate 
 something wrong with the data (or infoset XML in case of unparse), which does not match the 
 DFDL schema.
 
@@ -50,6 +50,12 @@ debugger.
 
 Try this command to examine the trace output. 
 
+Using daffodil 3.10.0 or later
+
+    daffodil parse -t -s fakeTDL.dfdl.xsd test_track_good_01.dat
+
+Using daffodil 3.9.0 or earlier
+
     daffodil -t parse -s fakeTDL.dfdl.xsd test_track_good_01.dat
 
 This will output a large amount of data showing each parse operation along with a data dump
@@ -58,9 +64,16 @@ can scroll around it in a text editor is recommended.
 
 To try the interactive debugger issue this command:
 
+Using daffodil 3.10.0 or later:
+
+    daffodil parse -d -s fakeTDL.dfdl.xsd test_track_good_01.dat
+
+Using daffodil 3.9.0 or earlier:
+
     daffodil -d parse -s fakeTDL.dfdl.xsd test_track_good_01.dat
 
-This will then display an interactive prompt "(debug)".
+
+This will then display an interactive prompt `(debug)`.
 At that prompt, type these commands to instruct the debugger to display some information 
 every time it stops:
 

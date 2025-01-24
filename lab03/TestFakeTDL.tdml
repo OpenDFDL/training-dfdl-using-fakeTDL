@@ -5,7 +5,8 @@ TDML is a convenient way to package tests of DFDL schemas and test data
 There are a few extra namespace prefix definitions here that aren't used yet,
 but they are commonly needed so we have them here for future convenience.
 -->
-<tdml:testSuite
+<testSuite
+  xmlns="http://www.ibm.com/xmlns/dfdl/testData"
   xmlns:tdml="http://www.ibm.com/xmlns/dfdl/testData"
   xmlns:dfdl="http://www.ogf.org/dfdl/dfdl-1.0/"
   xmlns:fn="http://www.w3.org/2005/xpath-functions"
@@ -25,14 +26,14 @@ but they are commonly needed so we have them here for future convenience.
   the output from the unparse is identical to the original data document.
   Both directions, parse and unparse, must succeed for the test to pass.
   -->
-  <tdml:parserTestCase name="test_track_good_01" root="fakeTDL" model="fakeTDL.dfdl.xsd">
-    <tdml:document>
-      <tdml:documentPart type="file">test_track_good_01.dat</tdml:documentPart>
-    </tdml:document>
-    <tdml:infoset>
-      <tdml:dfdlInfoset type="file">test_track_good_01.xml</tdml:dfdlInfoset>
-    </tdml:infoset>
-  </tdml:parserTestCase>
+  <parserTestCase name="test_track_good_01" root="fakeTDL" model="fakeTDL.dfdl.xsd">
+    <document>
+      <documentPart type="file">test_track_good_01.dat</documentPart>
+    </document>
+    <infoset>
+      <dfdlInfoset type="file">test_track_good_01.xml</dfdlInfoset>
+    </infoset>
+  </parserTestCase>
 
   <!--
   This is the same test as the one above, just with the data embedded here
@@ -42,18 +43,18 @@ but they are commonly needed so we have them here for future convenience.
   These sort of self-contained tests where the data is just embedded in the TDML
   file can be very convenient.
   -->
-  <tdml:parserTestCase name="test_track_good_02" root="fakeTDL" model="fakeTDL.dfdl.xsd">
-    <tdml:document>
-      <tdml:documentPart type="byte">
+  <parserTestCase name="test_track_good_02" root="fakeTDL" model="fakeTDL.dfdl.xsd">
+    <document>
+      <documentPart type="byte">
         5441 4731 3233 0102 0300 0000 0001 4224
         0000 c28c 0000 0190 5555 3737 3701 0201
         4224 6666 c28b cccd 015e 5741 004b 00c8
         5858 5858 5858 5858 5858 5858 5858 5858
-      </tdml:documentPart>
-    </tdml:document>
-    <tdml:infoset>
-      <tdml:dfdlInfoset>
-        <fakeTDL:fakeTDL>
+      </documentPart>
+    </document>
+    <infoset>
+      <dfdlInfoset>
+        <fakeTDL:fakeTDL xmlns="">
           <track>
             <source>AG123</source>
             <sendTime>01:02:03</sendTime>
@@ -73,27 +74,27 @@ but they are commonly needed so we have them here for future convenience.
             <speed>200</speed>
           </track>
         </fakeTDL:fakeTDL>
-      </tdml:dfdlInfoset>
-    </tdml:infoset>
-  </tdml:parserTestCase>
+      </dfdlInfoset>
+    </infoset>
+  </parserTestCase>
 
   <!--
  This is a negative test similar to the one above
  but detecting that the data, while well-formed, has an invalid value for the
  <course>587</course> element which is supposed to be an angle 0 to 359.
  -->
-  <tdml:parserTestCase name="test_track_invalid_01" root="fakeTDL" model="fakeTDL.dfdl.xsd">
-    <tdml:document>
-      <tdml:documentPart type="byte">
+  <parserTestCase name="test_track_invalid_01" root="fakeTDL" model="fakeTDL.dfdl.xsd">
+    <document>
+      <documentPart type="byte">
         5441 4731 3233 0102 0300 0000 0001 4224
         0000 c28c 0000 0190 5555 3737 3701 0201
         4224 6666 c28b cccd 015e 5741 024b 00c8
         5858 5858 5858 5858 5858 5858 5858 5858
-      </tdml:documentPart>
-    </tdml:document>
-    <tdml:infoset>
-      <tdml:dfdlInfoset>
-        <fakeTDL:fakeTDL>
+      </documentPart>
+    </document>
+    <infoset>
+      <dfdlInfoset>
+        <fakeTDL:fakeTDL xmlns="">
           <track>
             <source>AG123</source>
             <sendTime>01:02:03</sendTime>
@@ -113,16 +114,16 @@ but they are commonly needed so we have them here for future convenience.
             <speed>200</speed>
           </track>
         </fakeTDL:fakeTDL>
-      </tdml:dfdlInfoset>
-    </tdml:infoset>
+      </dfdlInfoset>
+    </infoset>
     <!--
     Enable this check for a validation error
     -->
-    <tdml:validationErrors>
-      <tdml:error>maxInclusive</tdml:error>
-      <tdml:error>359</tdml:error>
-    </tdml:validationErrors>
-  </tdml:parserTestCase>
+    <validationErrors>
+      <error>maxInclusive</error>
+      <error>359</error>
+    </validationErrors>
+  </parserTestCase>
 
 
   <!--
@@ -167,22 +168,22 @@ but they are commonly needed so we have them here for future convenience.
     </errors>
   </unparserTestCase>
 
-  <tdml:parserTestCase name="test_track_invalid_02" root="fakeTDL" model="fakeTDL.dfdl.xsd">
-    <tdml:document>
+  <parserTestCase name="test_track_invalid_02" root="fakeTDL" model="fakeTDL.dfdl.xsd">
+    <document>
       <!--
       Almost every field in the data below has a
       well-formed, but invalid value.
       -->
-      <tdml:documentPart type="byte">
+      <documentPart type="byte">
         5441 4731 325A 0102 0300 0000 0001 446B
         4000 C472 8000 FC17 5859 5A5A 5901 0201
         4452 4666 C459 799A 7D01 5851 024B 07D1
         5858 5858 5858 5858 5858 5858 5858 5858
-      </tdml:documentPart>
-    </tdml:document>
-    <tdml:infoset>
-      <tdml:dfdlInfoset>
-        <fakeTDL:fakeTDL>
+      </documentPart>
+    </document>
+    <infoset>
+      <dfdlInfoset>
+        <fakeTDL:fakeTDL xmlns="">
           <track>
             <source>AG12Z</source>
             <sendTime>01:02:03</sendTime>
@@ -202,9 +203,9 @@ but they are commonly needed so we have them here for future convenience.
             <speed>2001</speed>
           </track>
         </fakeTDL:fakeTDL>
-      </tdml:dfdlInfoset>
-    </tdml:infoset>
-    <tdml:validationErrors>
+      </dfdlInfoset>
+    </infoset>
+    <validationErrors>
       <!--
       This will cause the test to fail, as this string will definitely
       not be found in any validation error messages.
@@ -214,7 +215,7 @@ but they are commonly needed so we have them here for future convenience.
       for one like this. The test runner will display all the messages
       as part of the diagnostic.
       -->
-      <tdml:error>NOT SURE WHAT VALIDATION ERRORS WE WILL GET</tdml:error>
+      <error>NOT SURE WHAT VALIDATION ERRORS WE WILL GET</error>
       <!--
       Below are, commented out, a bunch of things that WILL be in
       the diagnostic messages, based on the names of the fields/elements,
@@ -245,7 +246,7 @@ but they are commonly needed so we have them here for future convenience.
       <error>elev</error>
       <error>32000</error>
       -->
-    </tdml:validationErrors>
-  </tdml:parserTestCase>
+    </validationErrors>
+  </parserTestCase>
 
-</tdml:testSuite>
+</testSuite>

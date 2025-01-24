@@ -9,7 +9,16 @@ processor that all the initiators are unique and once found they will
 discriminate the choice of the branch. 
 
 Two simple positive self-contained `parserTestCase` elements are added 
-to the `TestFakeTDL.tdml` test suite to exercise these new message types. 
+to the `TestFakeTDL.tdml` test suite to exercise these new message types.
+
+As an experiment, change the choice to use `dfdl:initiatedContent="no"`.
+Then take a look at the `test_malformed_bcd_01` in the TDML file. 
+This test can be used to better understand the way that dfdl:initiatedContent="yes"
+creates better diagnostics and improves the DFDL schema behavior when
+rejecting malformed data. (See comments with that test.)
+You can run the test with:
+
+    daffodil test -i TestFakeTDL.tdml test_malformed_bcd_01
 
 ## Rich Pattern Facets
 

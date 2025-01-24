@@ -5,7 +5,8 @@ TDML is a convenient way to package tests of DFDL schemas and test data
 There are a few extra namespace prefix definitions here that aren't used yet,
 but they are commonly needed so we have them here for future convenience.
 -->
-<tdml:testSuite
+<testSuite
+  xmlns="http://www.ibm.com/xmlns/dfdl/testData"
   xmlns:tdml="http://www.ibm.com/xmlns/dfdl/testData"
   xmlns:dfdl="http://www.ogf.org/dfdl/dfdl-1.0/"
   xmlns:fn="http://www.w3.org/2005/xpath-functions"
@@ -25,14 +26,14 @@ but they are commonly needed so we have them here for future convenience.
   the output from the unparse is identical to the original data document.
   Both directions, parse and unparse, must succeed for the test to pass.
   -->
-  <tdml:parserTestCase name="test_track_good_01" root="fakeTDL" model="fakeTDL.dfdl.xsd">
-    <tdml:document>
-      <tdml:documentPart type="file">test_track_good_01.dat</tdml:documentPart>
-    </tdml:document>
-    <tdml:infoset>
-      <tdml:dfdlInfoset type="file">test_track_good_01.xml</tdml:dfdlInfoset>
-    </tdml:infoset>
-  </tdml:parserTestCase>
+  <parserTestCase name="test_track_good_01" root="fakeTDL" model="fakeTDL.dfdl.xsd">
+    <document>
+      <documentPart type="file">test_track_good_01.dat</documentPart>
+    </document>
+    <infoset>
+      <dfdlInfoset type="file">test_track_good_01.xml</dfdlInfoset>
+    </infoset>
+  </parserTestCase>
 
   <!--
   This is the same test as the one above, just with the data embedded here
@@ -42,17 +43,17 @@ but they are commonly needed so we have them here for future convenience.
   These sort of self-contained tests where the data is just embedded in the TDML
   file can be very convenient.
   -->
-  <tdml:parserTestCase name="test_track_good_02" root="fakeTDL" model="fakeTDL.dfdl.xsd">
-    <tdml:document>
-      <tdml:documentPart type="byte">
+  <parserTestCase name="test_track_good_02" root="fakeTDL" model="fakeTDL.dfdl.xsd">
+    <document>
+      <documentPart type="byte">
         5441 4731 3233 0102 0300 0000 0001 4224
         0000 c28c 0000 0190 5555 3737 3701 0201
         4224 6666 c28b cccd 015e 5741 004b 00c8
         5858 5858 5858 5858 5858 5858 5858 5858
-      </tdml:documentPart>
-    </tdml:document>
-    <tdml:infoset>
-      <tdml:dfdlInfoset>
+      </documentPart>
+    </document>
+    <infoset>
+      <dfdlInfoset>
         <fakeTDL:fakeTDL>
           <track>
           <source>AG123</source>
@@ -73,26 +74,26 @@ but they are commonly needed so we have them here for future convenience.
           <speed>200</speed>
           </track>
         </fakeTDL:fakeTDL>
-      </tdml:dfdlInfoset>
-    </tdml:infoset>
-  </tdml:parserTestCase>
+      </dfdlInfoset>
+    </infoset>
+  </parserTestCase>
 
   <!--
  This is a negative test similar to the one above
  but detecting that the data, while well-formed, has an invalid value for the
  <course>587</course> element which is supposed to be an angle 0 to 359.
  -->
-  <tdml:parserTestCase name="test_track_invalid_01" root="fakeTDL" model="fakeTDL.dfdl.xsd">
-    <tdml:document>
-      <tdml:documentPart type="byte">
+  <parserTestCase name="test_track_invalid_01" root="fakeTDL" model="fakeTDL.dfdl.xsd">
+    <document>
+      <documentPart type="byte">
         5441 4731 3233 0102 0300 0000 0001 4224
         0000 c28c 0000 0190 5555 3737 3701 0201
         4224 6666 c28b cccd 015e 5741 024b 00c8
         5858 5858 5858 5858 5858 5858 5858 5858
-      </tdml:documentPart>
-    </tdml:document>
-    <tdml:infoset>
-      <tdml:dfdlInfoset>
+      </documentPart>
+    </document>
+    <infoset>
+      <dfdlInfoset>
         <fakeTDL:fakeTDL>
           <track>
           <source>AG123</source>
@@ -113,16 +114,17 @@ but they are commonly needed so we have them here for future convenience.
           <speed>200</speed>
           </track>
         </fakeTDL:fakeTDL>
-      </tdml:dfdlInfoset>
-    </tdml:infoset>
+      </dfdlInfoset>
+    </infoset>
     <!--
     Enable this check for a validation error
     -->
-    <tdml:validationErrors>
-      <tdml:error>maxInclusive</tdml:error>
-      <tdml:error>359</tdml:error>
-    </tdml:validationErrors>
-  </tdml:parserTestCase>
+    <validationErrors>
+      <error>maxInclusive</error>
+      <error>359</error>
+    </validationErrors>
+  </parserTestCase>
+
 
 
   <!--
@@ -167,21 +169,21 @@ but they are commonly needed so we have them here for future convenience.
     </errors>
   </unparserTestCase>
 
-  <tdml:parserTestCase name="test_track_invalid_02" root="fakeTDL" model="fakeTDL.dfdl.xsd">
-    <tdml:document>
+  <parserTestCase name="test_track_invalid_02" root="fakeTDL" model="fakeTDL.dfdl.xsd">
+    <document>
       <!--
       Almost every field in the data below has a
       well-formed, but invalid value.
       -->
-      <tdml:documentPart type="byte">
+      <documentPart type="byte">
         5441 4731 325A 0102 0300 0000 0001 446B
         4000 C472 8000 FC17 5859 5A5A 5901 0201
         4452 4666 C459 799A 7D01 5851 024B 07D1
         5858 5858 5858 5858 5858 5858 5858 5858
-      </tdml:documentPart>
-    </tdml:document>
-    <tdml:infoset>
-      <tdml:dfdlInfoset>
+      </documentPart>
+    </document>
+    <infoset>
+      <dfdlInfoset>
         <fakeTDL:fakeTDL>
           <track>
           <source>AG12Z</source>
@@ -202,9 +204,9 @@ but they are commonly needed so we have them here for future convenience.
           <speed>2001</speed>
           </track>
         </fakeTDL:fakeTDL>
-      </tdml:dfdlInfoset>
-    </tdml:infoset>
-    <tdml:validationErrors>
+      </dfdlInfoset>
+    </infoset>
+    <validationErrors>
       <error>quality</error>
       <error>enumeration</error>
       <error>E|A</error>
@@ -229,20 +231,20 @@ but they are commonly needed so we have them here for future convenience.
       <error>source</error>
       <error>elev</error>
       <error>32000</error>
-    </tdml:validationErrors>
-  </tdml:parserTestCase>
+    </validationErrors>
+  </parserTestCase>
 
-  <tdml:parserTestCase name="test_identity_01" root="fakeTDL" model="fakeTDL.dfdl.xsd">
-    <tdml:document>
-      <tdml:documentPart type="byte">
+  <parserTestCase name="test_identity_01" root="fakeTDL" model="fakeTDL.dfdl.xsd">
+    <document>
+      <documentPart type="byte">
         4441 4731 3233 0102 0401 0000 0002 5555
         3737 3701 0202 4641 0000 4845 5243 554C
         4553 5F43 5F31 3330 5F43 342F 4335 284A
         2900 0000 0000 0000 0000 0000 0000 0000
-      </tdml:documentPart>
-    </tdml:document>
-    <tdml:infoset>
-      <tdml:dfdlInfoset>
+      </documentPart>
+    </document>
+    <infoset>
+      <dfdlInfoset>
         <fakeTDL:fakeTDL xmlns="">
           <identity>
             <source>AG123</source>
@@ -257,21 +259,21 @@ but they are commonly needed so we have them here for future convenience.
             <desc>HERCULES_C_130_C4/C5(J)</desc>
           </identity>
         </fakeTDL:fakeTDL>
-      </tdml:dfdlInfoset>
-    </tdml:infoset>
-  </tdml:parserTestCase>
+      </dfdlInfoset>
+    </infoset>
+  </parserTestCase>
 
-  <tdml:parserTestCase name="test_ack_01" root="fakeTDL" model="fakeTDL.dfdl.xsd">
-    <tdml:document>
-      <tdml:documentPart type="byte">
+  <parserTestCase name="test_ack_01" root="fakeTDL" model="fakeTDL.dfdl.xsd">
+    <document>
+      <documentPart type="byte">
         4142 4532 3334 0102 1441 4731 3233 0001
         0000 0002 5858 5858 5858 5858 5858 5858
         5858 5858 5858 5858 5858 5858 5858 5858
         5858 5858 5858 5858 5858 5858 5858 5858
-      </tdml:documentPart>
-    </tdml:document>
-    <tdml:infoset>
-      <tdml:dfdlInfoset>
+      </documentPart>
+    </document>
+    <infoset>
+      <dfdlInfoset>
         <fakeTDL:fakeTDL xmlns="">
           <ack>
             <source>BE234</source>
@@ -283,7 +285,53 @@ but they are commonly needed so we have them here for future convenience.
             </ackID>
           </ack>
         </fakeTDL:fakeTDL>
-      </tdml:dfdlInfoset>
-    </tdml:infoset>
-  </tdml:parserTestCase>
-</tdml:testSuite>
+      </dfdlInfoset>
+    </infoset>
+  </parserTestCase>
+
+
+  <!--
+ This is a negative test. It has a track message, but the
+ sendTime field, which is supposed to be BCD contains ABCDEF
+ which cannot be converted to a xs:time type value.
+
+ This test illustrates the importance of dfdl:initiatedContent="yes"
+ where the initiator behaves as a DFDL discriminator. If you change
+ dfdl:initatedContent to "no", the diagnostic information talks about
+ initiators 'A' and 'D' not being found, and "all choice branches" failing
+ which is confusing because the message is clearly a track message with initiator 'T'.
+
+ If dfdl:initiatedContent="yes", finding the initiator discriminates the
+ choice - no attempts will be made to try the identity nor ack choice branches
+ once the 'T' is found even if the track branch fails. The diagnostic
+ messages will be all about the sendTime field of a track message being malformed.
+ -->
+  <parserTestCase name="test_malformed_bcd_01" root="fakeTDL" model="fakeTDL.dfdl.xsd">
+    <document>
+      <documentPart type="byte">
+        5441 4731 3233 ABCD EF00 0000 0001 4224
+        0000 c28c 0000 0190 5555 3737 3701 0201
+        4224 6666 c28b cccd 015e 5741 024b 00c8
+        5858 5858 5858 5858 5858 5858 5858 5858
+      </documentPart>
+    </document>
+    <errors>
+      <error>Parse Error</error>
+      <error>Error in packed data</error>
+      <error>Invalid high nibble: 10</error>
+      <error>sendTime</error>
+      <!--
+      The above are useful relevant error message info.
+
+      But, if dfdl:initatedContent="no" then you'll also get confusing
+      error messages about the other choice alternatives being
+      attempted and failing.
+
+      <error>All choice alternatives failed</error>
+      <error>Initiator 'A' not found</error>
+      <error>Initiator 'D' not found</error>
+      -->
+    </errors>
+  </parserTestCase>
+
+</testSuite>

@@ -20,10 +20,6 @@ cybersecurity system, and maintaining it over time, easier.
   - `fakeTDLType.dfdl.xsd` - primary type (fakeTDLType), and message definitions
   - `fakeTDL-field-types.dfdl.xsd` - types of the message fields
   - `fakeTDL-enum-entityTypeDetails.dfdl.xsd` - enum type definition
-- Add a fakeTDLFile global element in the `fakeTDL.dfdl.xsd` file.
-  - This adds the ability to test whole files of messages at once, and the
-  `test_file_01.dat/xml` are test data which show this being used. 
-
 - Add `.gitattributes` file to specify the ".dat" files are binary, not text. 
 
 ## Compiling the Schema to Daffodil ".bin" Binary Form
@@ -43,3 +39,53 @@ which clarify the Daffodil version they are compiled for.
 This will run all the TDML tests:
 
     daffodil test -i test/TestFakeTDL.tdml
+
+## Testing Multiple Messages at Once
+
+The file `test_file_01.dat` contains multiple messages. All of them can be fed to 
+a DFDL parse using the daffodil CLI `--stream` option:
+
+    daffodil parse --stream -s ../src/fakeTDL.dfdl.xsd test_file_01.dat
+
+## Filtering Messages using XSLT 
+
+The `block_fakeTDL_ag123.xsl` is an XSLT transformation that converts 
+the XML of a fakeTDL message into nothing at all if the `source` field of 
+the message contains `AG123`. This is an example of a simple message filtering
+rule based on the source unit number. 
+
+The script `xslt-stream.sh` takes an XSLT file as argument, and expects a stream
+of XML documents on its input (NUL separated, which is the
+way they are separated coming out of `daffodil parse --stream ...` ). 
+It transforms each XML document using the stylesheet passed as the argument. 
+
+Try:
+
+    daffodil parse --stream      \
+      -s ../src/fakeTDL.dfdl.xsd \
+      test_file_01.dat 
+
+The output from the above will be identical to the `test_file_01.xml` which is not a standard
+XML file, but a stream of XML documents terminated separated by NUL characters. 
+
+Now add the XSLT transform:
+
+    daffodil parse --stream      \
+      -s ../src/fakeTDL.dfdl.xsd \
+      test_file_01.dat |         \
+      ./xslt-stream.sh block_fakeTDL_ag123.xsl
+
+If you look at `test_file_01.xml`, you'll see that there are 3 messages, the first two 
+have `AG123` as the `source`. Hence, the above command line filters them out, leaving only
+the third ack message.
+
+The following will further unparse the surviving message(s) back to native form.
+
+    daffodil parse --stream \
+        -s ../src/fakeTDL.dfdl.xsd test_file_01.dat |  \
+      ./xslt-stream.sh block_fakeTDL_ag123.xsl | \
+      daffodil unparse --stream -s ../src/fakeTDL.dfdl.xsd
+
+This will output the native form of just a single ack message, as the XSLT filtered out 
+the first two messages. The result will be identical to the last 64 bytes of the
+`test_file_01.dat` data. 

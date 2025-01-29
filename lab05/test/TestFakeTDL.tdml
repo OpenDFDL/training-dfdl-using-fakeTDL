@@ -233,65 +233,6 @@ but they are commonly needed so we have them here for future convenience.
     </validationErrors>
   </parserTestCase>
 
-  <!--
-   This is a positive parser test case of a whole file of multiple
-   fakeTDL messages.
-
-   The root element is fakeTDLFile now.
-   -->
-  <parserTestCase name="test_file_01" root="fakeTDLFile" model="fakeTDL.dfdl.xsd">
-    <document>
-      <documentPart type="file">test_file_01.dat</documentPart>
-    </document>
-    <infoset>
-      <dfdlInfoset type="file">test_file_01.xml</dfdlInfoset>
-    </infoset>
-  </parserTestCase>
-
-  <!--
-  This is a negative parser test case of a whole file of multiple
-  fakeTDL messages.
-  -->
-  <parserTestCase name="test_file_bad_01" root="fakeTDLFile" model="fakeTDL.dfdl.xsd">
-    <document>
-      <documentPart type="file">test_file_bad_01.dat</documentPart>
-    </document>
-    <errors>
-      <!--
-      Exercise: try this test without the discriminator inside the fakeTDLFile element
-      of the schema.
-
-      Without the discriminator in the fakeTDLFile to control the DFDL _point of uncertainty_
-      about the length of the array of fakeTDL messages, this parse will stop
-      at the first failure to parse, back up to before it, and end the array.
-
-      Hence, this will not consume all the data, will create an infoset, and we will get
-      an error about left over data which will not tell us anything about why the parse
-      failed.
-      -->
-      <!--
-      <error>left over data</error>
-      -->
-      <!--
-      Once we add the discriminator, the point of uncertainty about whether there is another
-      fakeTDL message in the file is resolved. If there is more data, the discriminator
-      evaluates to true which tells the parser there IS another array element, which means
-      another fakeTDL message.
-
-      However, our test data file doesn't contain a whole additional fakeTDL message. So this
-      parse attempt will fail, but now we will get a diagnostic about why it failed.
-
-      So once you add the discriminator to the fakeTDLFile element in the schema you can
-      comment out the left over data expected error string above, and comment back in
-      the parse error about insufficient data below.
-      -->
-
-      <error>Parse Error</error>
-      <error>insufficient</error>
-
-    </errors>
-  </parserTestCase>
-
 
   <parserTestCase name="test_identity_01" root="fakeTDL" model="fakeTDL.dfdl.xsd">
     <document>

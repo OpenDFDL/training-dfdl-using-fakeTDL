@@ -65,7 +65,7 @@
   </complexType>
 
   <!--
-  This is just factoring out two fields that are in both track and ident
+  This is just factoring out fields that are in both track and ident
   messages
   -->
   <group name="ackRelated">

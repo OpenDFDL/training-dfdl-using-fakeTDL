@@ -1,4 +1,4 @@
-# DFDL Training for Owl CDS Users
+# DFDL Training using the FakeTDL Data Format
 
 This repository contains a number of labs that provide a gradual
 introduction to DFDL schema authoring and debugging.
@@ -10,4 +10,3 @@ A DFDL schema for fakeTDL is built up over the lab lessons and
 training lectures.
 
 The only tool used is the Daffodil Command Line Interface.
-

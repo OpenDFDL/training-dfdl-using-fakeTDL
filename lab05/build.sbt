@@ -1,24 +1,20 @@
-name := "fakeTDL-lab05"
+val root = (project in file("."))
+  .settings(
+    name := "fakeTDL-lab05",
+    organization := "com.owlcyberdefense",
+    version := "0.1.0-SNAPSHOT",
 
-organization := "com.owlcyberdefense"
+    // for details about DaffodilPlugin settings, see https://github.com/apache/daffodil-sbt
+    daffodilFlatLayout := true,
+    daffodilVersion := "4.1.0",
+    daffodilPackageBinInfos := Seq(
+      // schema for a single message
+      DaffodilBinInfo("/fakeTDL.dfdl.xsd", root = Some("fakeTDL"), name = Some("fakeTDL"))
+    )
 
-version := "0.1.0-SNAPSHOT"
-
-// for details about DaffodilPlugin settings, see https://github.com/apache/daffodil-sbt
-enablePlugins(DaffodilPlugin)
-
-daffodilFlatLayout := true
-
-daffodilVersion := daffodilPackageBinVersions.value.head
-
-daffodilPackageBinVersions := Seq("3.10.0", "3.9.0", "3.8.0", "3.7.0", "3.5.0", "3.4.0")
-
-daffodilPackageBinInfos := Seq(
-  // schema for a single message
-  DaffodilBinInfo("/fakeTDL.dfdl.xsd", root = Some("fakeTDL"), name = Some("fakeTDL"))
-)
-
-// not necessary for this small schema, but for larger schemas
-// where schema compilation takes a while this is important
-//
-// daffodilTdmlUsesPackageBin := true
+    // not necessary for this small schema, but for larger schemas
+    // where schema compilation takes a while this is important
+    //
+    // daffodilTdmlUsesPackageBin := true
+  )
+  .daffodilProject(crossDaffodilVersions = Seq("4.0.0", "3.11.0", "3.10.0", "3.9.0", "3.8.0", "3.7.0", "3.5.0", "3.4.0"))

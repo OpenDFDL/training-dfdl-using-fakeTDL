@@ -1,14 +1,10 @@
-import org.apache.daffodil.tdml.Runner
+import org.apache.daffodil.junit.tdml.TdmlSuite
+import org.apache.daffodil.junit.tdml.TdmlTests
 
-import org.junit.AfterClass
 import org.junit.Test
 
-object TestFakeTDL {
-  lazy val runner = Runner("", "TestFakeTDL.tdml")
-
-  @AfterClass def shutDown(): Unit = {
-    runner.reset
-  }
+object TestFakeTDL extends TdmlSuite {
+  val tdmlResource = "/TestFakeTDL.tdml"
 }
 
 /**
@@ -17,15 +13,12 @@ object TestFakeTDL {
  *
  * One can also run tests from the Daffodil Command Line Interface (CLI)
  */
-class TestFakeTDL {
-
-  import TestFakeTDL._
-
-  @Test def test_all_tdml(): Unit = { runner.runAllTests() }
+class TestFakeTDL extends TdmlTests {
+  val tdmlSuite = TestFakeTDL
 
   // A JUnit run of just a single test can be done like this,
   // and some IDEs like IntelliJ IDEA will let you click on this to run
-  // it conveniently.
-  // @Test def test_track_good_01(): Unit = { runner.runOneTest("test_track_good_01") }
-
+  // it conveniently. When using 'test', the name of the JUnit test is used
+  // as the test in the TDML file
+  @Test def test_track_good_01 = test
 }

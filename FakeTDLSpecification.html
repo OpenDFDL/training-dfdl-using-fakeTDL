@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
  <head>
-  <title>IntelliJ Markdown Preview</title>
+  <title>FakeTDL Data Format Specification</title>
   <meta http-equiv="Content-Security-Policy" content="default-src 'none';
 script-src 'self';
 style-src 'unsafe-inline';
@@ -96,7 +96,8 @@ child-src 'none';">
    <h3 id="ack-message" md-src-pos="6819..6834">Ack Message</h3>
    <ul md-src-pos="6835..6962">
     <li md-src-pos="6835..6868">dest unit number (5 characters)</li>
-    <li md-src-pos="6869..6962">messageID (being acknowledged) (repeats up to 12 times) (each is a 4 byte unsigned integer)</li>
+    <li md-src-pos="6835..6868">count - 2 byte unsigned integer from 1 to 12</li>
+    <li md-src-pos="6869..6962">messageID (being acknowledged) (repeats up to 12 times based on the value of count) (each is a 4 byte unsigned integer)</li>
    </ul>
    <p md-src-pos="6964..7200"><span md-src-pos="6964..7034">One ack message can acknowledge the receipt of multiple track/identity</span> <span md-src-pos="7036..7076">messages that requested acknowledgement.</span> <span md-src-pos="7077..7085">That is,</span> <span md-src-pos="7086..7105">fakeTDL can be used</span> <span md-src-pos="7106..7174">to illustrate scenarios where acks are sent infrequently relative to</span> <span md-src-pos="7175..7200">track and ident messages.</span></p>
    <p md-src-pos="7202..7450"><span md-src-pos="7202..7267">FakeTDL contains ack messages because TDLs generally require that</span> <span md-src-pos="7269..7300">some messages are acknowledged.</span> <span md-src-pos="7301..7313">For example,</span> <span md-src-pos="7314..7318">when</span> <span md-src-pos="7320..7390">an Identity message changes the IFF of an entity from Enemy to Friend,</span> <span md-src-pos="7391..7450">then an ACK must be sent back to the source of that update.</span></p>

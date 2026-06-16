@@ -149,7 +149,8 @@ information.
 
 ### Ack Message
 - dest unit number (5 characters)
-- messageID (being acknowledged) (repeats up to 12 times) (each is a 4 byte unsigned integer)
+- count - 2 byte unsigned integer from 1 to 12
+- messageID (being acknowledged) (repeats up to 12 times based on the value of count) (each is a 4 byte unsigned integer)
 
 One ack message can acknowledge the receipt of multiple track/identity 
 messages that requested acknowledgement. That is, fakeTDL can be used
